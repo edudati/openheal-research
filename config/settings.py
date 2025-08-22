@@ -1,7 +1,6 @@
 from pathlib import Path
 import os
 from dotenv import load_dotenv
-import dj_database_url
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -73,47 +72,29 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
 # Database configuration
-DATABASE_URL = os.getenv("DATABASE_URL")
-
-if DATABASE_URL:
-    # Production - Use DATABASE_URL (Supabase)
-    DATABASES = {
-        "default": dj_database_url.config(
-            default=DATABASE_URL,
-            conn_max_age=600,
-            ssl_require=True,
-        ),
-        
-        "openheal_ext": {  # reading only
-            "ENGINE": "django.db.backends.postgresql",
-            "HOST": os.getenv("OPENHEAL_PG_HOST"),
-            "NAME": os.getenv("OPENHEAL_PG_DB"),
-            "USER": os.getenv("OPENHEAL_PG_USER"),
-            "PASSWORD": os.getenv("OPENHEAL_PG_PASSWORD"),
-            "PORT": os.getenv("OPENHEAL_PG_PORT"),
-        }
-    }
-else:
-    # Development - Local PostgreSQL
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql',
-            'HOST': os.getenv('DB_HOST'),
-            'NAME': os.getenv('DB_NAME'),
-            'USER': os.getenv('DB_USER'),
-            'PASSWORD': os.getenv('DB_PASSWORD'),
-            'PORT': os.getenv('DB_PORT'),
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'HOST': os.getenv('DB_HOST'),
+        'NAME': os.getenv('DB_NAME'),
+        'USER': os.getenv('DB_USER'),
+        'PASSWORD': os.getenv('DB_PASSWORD'),
+        'PORT': os.getenv('DB_PORT'),
+        'OPTIONS': {
+            'charset': 'utf8mb4',
+            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
         },
-        
-        "openheal_ext": {  # reading only
-            "ENGINE": "django.db.backends.postgresql",
-            "HOST": os.getenv("OPENHEAL_PG_HOST"),
-            "NAME": os.getenv("OPENHEAL_PG_DB"),
-            "USER": os.getenv("OPENHEAL_PG_USER"),
-            "PASSWORD": os.getenv("OPENHEAL_PG_PASSWORD"),
-            "PORT": os.getenv("OPENHEAL_PG_PORT"),
-        }
+    },
+    
+    "openheal_ext": {  # reading only
+        "ENGINE": "django.db.backends.postgresql",
+        "HOST": os.getenv("OPENHEAL_PG_HOST"),
+        "NAME": os.getenv("OPENHEAL_PG_DB"),
+        "USER": os.getenv("OPENHEAL_PG_USER"),
+        "PASSWORD": os.getenv("OPENHEAL_PG_PASSWORD"),
+        "PORT": os.getenv("OPENHEAL_PG_PORT"),
     }
+}
 
 
 # Password validation
