@@ -1,12 +1,15 @@
 from pathlib import Path
 import os
 from dotenv import load_dotenv
+import dj_database_url
+
+
+# Build paths inside the project like this: BASE_DIR / 'subdir'.
+BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Load environment variables from .env file
 load_dotenv()
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve().parent.parent
 
 
 # Quick-start development settings - unsuitable for production
@@ -69,25 +72,48 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'HOST': os.getenv('DB_HOST'),
-        'NAME': os.getenv('DB_NAME'),
-        'USER': os.getenv('DB_USER'),
-        'PASSWORD': os.getenv('DB_PASSWORD'),
-        'PORT': os.getenv('DB_PORT'),
-    },
-    
-    "openheal_ext": {  # somente leitura
-        "ENGINE": "django.db.backends.postgresql",
-        "HOST": os.getenv("OPENHEAL_PG_HOST"),
-        "NAME": os.getenv("OPENHEAL_PG_DB"),
-        "USER": os.getenv("OPENHEAL_PG_USER"),
-        "PASSWORD": os.getenv("OPENHEAL_PG_PASSWORD"),
-        "PORT": os.getenv("OPENHEAL_PG_PORT"),
-    },
-}
+# Database configuration
+DATABASE_URL = os.getenv("DATABASE_URL")
+
+if DATABASE_URL:
+    # Production - Use DATABASE_URL (Supabase)
+    DATABASES = {
+        "default": dj_database_url.config(
+            default=DATABASE_URL,
+            conn_max_age=600,
+            ssl_require=True,
+        ),
+        
+        "openheal_ext": {  # reading only
+            "ENGINE": "django.db.backends.postgresql",
+            "HOST": os.getenv("OPENHEAL_PG_HOST"),
+            "NAME": os.getenv("OPENHEAL_PG_DB"),
+            "USER": os.getenv("OPENHEAL_PG_USER"),
+            "PASSWORD": os.getenv("OPENHEAL_PG_PASSWORD"),
+            "PORT": os.getenv("OPENHEAL_PG_PORT"),
+        }
+    }
+else:
+    # Development - Local PostgreSQL
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'HOST': os.getenv('DB_HOST'),
+            'NAME': os.getenv('DB_NAME'),
+            'USER': os.getenv('DB_USER'),
+            'PASSWORD': os.getenv('DB_PASSWORD'),
+            'PORT': os.getenv('DB_PORT'),
+        },
+        
+        "openheal_ext": {  # reading only
+            "ENGINE": "django.db.backends.postgresql",
+            "HOST": os.getenv("OPENHEAL_PG_HOST"),
+            "NAME": os.getenv("OPENHEAL_PG_DB"),
+            "USER": os.getenv("OPENHEAL_PG_USER"),
+            "PASSWORD": os.getenv("OPENHEAL_PG_PASSWORD"),
+            "PORT": os.getenv("OPENHEAL_PG_PORT"),
+        }
+    }
 
 
 # Password validation
@@ -113,7 +139,9 @@ AUTHENTICATION_BACKENDS = [
     "django.contrib.auth.backends.ModelBackend",
 ]
 
-API_INGEST_KEY = os.getenv('API_INGEST_KEY')  # ROBLOX API KEY
+
+# ROBLOX API KEY
+API_INGEST_KEY = os.getenv('API_INGEST_KEY')  
 
 
 
@@ -133,6 +161,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
 STATIC_URL = 'static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
