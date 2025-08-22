@@ -1,5 +1,9 @@
 from pathlib import Path
 import os
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -9,12 +13,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-usi9z8sb4p$+y5lhf(if$ejvo#w_$@!nom@4z+!5y-33fr6le4'
+SECRET_KEY = os.getenv('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv('DEBUG', 'True').lower() == 'true'
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS').split(',')
 
 
 # Application definition
@@ -68,20 +72,20 @@ WSGI_APPLICATION = 'config.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'HOST': 'localhost',
-        'NAME': 'openhealresearch_db',
-        'USER': 'postgres',
-        'PASSWORD': '1234',
-        'PORT': '5432',
+        'HOST': os.getenv('DB_HOST'),
+        'NAME': os.getenv('DB_NAME'),
+        'USER': os.getenv('DB_USER'),
+        'PASSWORD': os.getenv('DB_PASSWORD'),
+        'PORT': os.getenv('DB_PORT'),
     },
     
     "openheal_ext": {  # somente leitura
         "ENGINE": "django.db.backends.postgresql",
-        "HOST": os.getenv("OPENHEAL_PG_HOST", "openheal-postgresql-restored.c9okgumkugwg.us-east-1.rds.amazonaws.com"),
-        "NAME": os.getenv("OPENHEAL_PG_DB", "openheal_db"),
-        "USER": os.getenv("OPENHEAL_PG_USER", "openhealadm"),
-        "PASSWORD": os.getenv("OPENHEAL_PG_PASSWORD", "wemoga2015"),
-        "PORT": os.getenv("OPENHEAL_PG_PORT", "5432"),
+        "HOST": os.getenv("OPENHEAL_PG_HOST"),
+        "NAME": os.getenv("OPENHEAL_PG_DB"),
+        "USER": os.getenv("OPENHEAL_PG_USER"),
+        "PASSWORD": os.getenv("OPENHEAL_PG_PASSWORD"),
+        "PORT": os.getenv("OPENHEAL_PG_PORT"),
     },
 }
 
@@ -109,9 +113,7 @@ AUTHENTICATION_BACKENDS = [
     "django.contrib.auth.backends.ModelBackend",
 ]
 
-API_INGEST_KEY = "3f9c8a2e5b174e63f7ab94c41a3b1d4fd5e83c0a54b397e77a3d7e5f96cb77fa"  # ROBLOX API KEY
-#import secrets
-#print(secrets.token_hex(32))
+API_INGEST_KEY = os.getenv('API_INGEST_KEY')  # ROBLOX API KEY
 
 
 
